@@ -35,7 +35,7 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public void deleteReservation(@PathVariable Long id) {
         Reservation reservation = reservations.stream()
-            .filter(r -> Objects.equals(r.getId(), id))
+            .filter(r -> Objects.equals(r.id(), id))
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
         reservations.remove(reservation);
