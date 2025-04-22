@@ -1,12 +1,13 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -49,25 +50,42 @@ public class ReservationDaoTest {
         @Autowired
         private ReservationDao reservationDao;
 
-        @BeforeEach
-        void createTestData() {
+        @Test
+        @DisplayName("전체 예약 기록을 조회할 수 있다.")
+        void findAllReservation() {
             jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)",
                 "사나", "2025-04-22", "15:40");
             jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)",
                 "앤지", "2025-04-21", "12:00");
-        }
 
-        @AfterEach
-        void deleteTestData() {
-            jdbcTemplate.update("DELETE FROM reservation");
-        }
-
-        @Test
-        @DisplayName("전체 예약 기록을 조회할 수 있다.")
-        void findAllReservation() {
             List<Reservation> reservations = reservationDao.findAllReservations();
 
             assertThat(reservations).hasSize(2);
+        }
+
+        @Test
+        @DisplayName("예약을 추가할 수 있다.")
+        void addReservation() {
+            Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22),
+                LocalTime.of(12, 0));
+            Reservation newReservation = reservationDao.addReservation(reservation);
+
+            assertAll(() -> {
+                assertThat(newReservation).isNotNull();
+                assertThat(reservationDao.findAllReservations()).hasSize(1);
+            });
+        }
+
+        @Test
+        @DisplayName("ID로 예약을 삭제할 수 있다.")
+        void removeReservation() {
+            Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22),
+                LocalTime.of(12, 0));
+            Reservation newReservation = reservationDao.addReservation(reservation);
+
+            reservationDao.removeReservationById(newReservation.id());
+
+            assertThat(reservationDao.findAllReservations()).isEmpty();
         }
     }
 }
