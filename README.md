@@ -18,6 +18,11 @@
 - [x] 예약 관리 페이지 내에서 예약 삭제
 - [x] 예약 추가/취소 시, H2 데이터베이스 활용
 
+### 4. 시간 관리 기능
+- [ ] `/admin/time` 요청 시 시간 관리 페이지 응답
+
+---
+
 ## CRUD API 명세
 
 ### 예약 목록 조회
@@ -78,6 +83,58 @@
 * Request
     ```
     DELETE /reservations/1 HTTP/1.1
+    ```
+* Response
+    ```
+    HTTP/1.1 200
+    ```
+
+### 시간 추가
+
+* Request
+    ```
+    POST /times HTTP/1.1
+    content-type: application/json
+
+    {
+      "startAt": "10:00"
+    }
+    ```
+* Response
+    ```
+    HTTP/1.1 200
+    Content-Type: application/json
+
+    {
+       "id": 1,
+       "startAt": "10:00"
+    }
+    ```
+
+### 시간 조회
+
+* Request
+    ```
+    GET /times HTTP/1.1
+    ```
+* Response
+    ```
+    HTTP/1.1 200 
+    Content-Type: application/json
+  
+    [
+      {
+        "id": 1,
+        "startAt": "10:00"
+      }
+    ]
+    ```
+
+### 시간 삭제
+
+* Request
+    ```
+    DELETE /times/1 HTTP/1.1
     ```
 * Response
     ```
