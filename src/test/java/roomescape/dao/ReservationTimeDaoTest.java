@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -24,59 +23,50 @@ public class ReservationTimeDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ReservationTimeDao reservationTimeDao;
 
-    @Nested
-    class ConnectionTest {
-
-        @Test
-        @DisplayName("DataSource 접근 테스트")
-        void connectJdbc() {
-            try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-                assertThat(connection).isNotNull();
-                assertThat(connection.getCatalog()).isEqualTo("TEST");
-                assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
-                    .next()).isTrue();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+    @Test
+    @DisplayName("DataSource 접근 테스트")
+    void connectJdbc() {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+            assertThat(connection).isNotNull();
+            assertThat(connection.getCatalog()).isEqualTo("TEST");
+            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
+                .next()).isTrue();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    @Nested
-    class CRUDTest {
+    @Test
+    @DisplayName("전체 시간을 조회할 수 있다.")
+    void findAllReservationTime() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
 
-        @Autowired
-        private ReservationTimeDao reservationTimeDao;
+        List<ReservationTime> times = reservationTimeDao.findAllTime();
 
-        @Test
-        @DisplayName("전체 시간을 조회할 수 있다.")
-        void findAllReservationTime() {
-            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
+        assertThat(times).hasSize(2);
+    }
 
-            List<ReservationTime> times = reservationTimeDao.findAllTime();
+    @Test
+    @DisplayName("시간을 추가할 수 있다.")
+    void addReservationTime() {
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
+        ReservationTime newReservationTime = reservationTimeDao.addTime(reservationTime);
 
-            assertThat(times).hasSize(2);
-        }
+        assertThat(newReservationTime).isNotNull();
+    }
 
-        @Test
-        @DisplayName("시간을 추가할 수 있다.")
-        void addReservationTime() {
-            ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
-            ReservationTime newReservationTime = reservationTimeDao.addTime(reservationTime);
+    @Test
+    @DisplayName("ID로 시간을 삭제할 수 있다.")
+    void removeReservation() {
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
+        ReservationTime newReservationTime = reservationTimeDao.addTime(reservationTime);
 
-            assertThat(newReservationTime).isNotNull();
-        }
+        reservationTimeDao.removeTimeById(newReservationTime.id());
 
-        @Test
-        @DisplayName("ID로 시간을 삭제할 수 있다.")
-        void removeReservation() {
-            ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
-            ReservationTime newReservationTime = reservationTimeDao.addTime(reservationTime);
-
-            // reservationTimeDao.removeReservationById(newReservationTime.id());
-
-            // assertThat(reservationTimeDao.findAllReservations()).isEmpty();
-        }
+        assertThat(reservationTimeDao.findAllTime()).isEmpty();
     }
 }

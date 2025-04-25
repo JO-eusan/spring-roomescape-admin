@@ -35,6 +35,11 @@ public class ReservationTimeDao {
         return ReservationTime.withId(keyHolder.getKey().longValue(), reservationTime);
     }
 
+    public void removeTimeById(Long id) {
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     private RowMapper<ReservationTime> createReservationMapper() {
         return (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
