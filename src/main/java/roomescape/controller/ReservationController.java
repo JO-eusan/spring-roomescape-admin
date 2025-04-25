@@ -17,7 +17,7 @@ public class ReservationController {
 
     private final ReservationDao reservationDao;
 
-    public ReservationController(ReservationDao reservationDao) {
+    private ReservationController(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
     }
 

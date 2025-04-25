@@ -35,7 +35,7 @@ public class ReservationDao {
             return stmt;
         }, keyHolder);
 
-        return Reservation.withId(reservation, keyHolder.getKey().longValue());
+        return Reservation.withId(keyHolder.getKey().longValue(), reservation);
     }
 
     public void removeReservationById(Long id) {
