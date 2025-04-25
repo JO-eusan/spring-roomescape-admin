@@ -2,22 +2,17 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.entity.ReservationTime;
 
 @JdbcTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import(ReservationTimeDao.class)
 public class ReservationTimeDaoTest {
 
@@ -25,19 +20,6 @@ public class ReservationTimeDaoTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private ReservationTimeDao reservationTimeDao;
-
-    @Test
-    @DisplayName("DataSource 접근 테스트")
-    void connectJdbc() {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("TEST");
-            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
-                .next()).isTrue();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     @DisplayName("전체 시간을 조회할 수 있다.")

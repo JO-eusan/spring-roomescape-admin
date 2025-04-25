@@ -11,15 +11,12 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.entity.Reservation;
 
 @JdbcTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import(ReservationDao.class)
 public class ReservationDaoTest {
 
@@ -33,7 +30,6 @@ public class ReservationDaoTest {
     void connectJdbc() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("TEST");
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
                 .next()).isTrue();
         } catch (SQLException e) {
