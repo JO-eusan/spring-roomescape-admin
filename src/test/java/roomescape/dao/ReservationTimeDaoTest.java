@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,12 +51,12 @@ public class ReservationTimeDaoTest {
         @Test
         @DisplayName("전체 시간을 조회할 수 있다.")
         void findAllReservationTime() {
-            jdbcTemplate.update("INSERT INTO reservation_time (startAt) VALUES (?)", "15:40");
-            jdbcTemplate.update("INSERT INTO reservation_time (startAt) VALUES (?)", "12:00");
+            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
 
-            // List<Reservation> reservations = reservationTimeDao.findAllReservations();
+            List<ReservationTime> times = reservationTimeDao.findAllTime();
 
-            // assertThat(reservations).hasSize(2);
+            assertThat(times).hasSize(2);
         }
 
         @Test

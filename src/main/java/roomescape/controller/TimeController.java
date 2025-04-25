@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,11 @@ public class TimeController {
 
     private TimeController(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
+    }
+
+    @GetMapping
+    public List<ReservationTime> readReservationTimes() {
+        return reservationTimeDao.findAllTime();
     }
 
     @PostMapping
