@@ -6,6 +6,8 @@ import roomescape.domain.Reservation;
 public interface ReservationDao {
 
     List<Reservation> findAllReservations();
+
     Reservation addReservation(Reservation reservation);
+
     void removeReservationById(Long id);
 }

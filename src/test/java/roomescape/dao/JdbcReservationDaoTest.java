@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -44,8 +43,10 @@ public class JdbcReservationDaoTest {
     void findAllReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('16:40')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('사나', '2025-04-22', 1)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('앤지', '2025-04-23', 2)");
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id) VALUES ('사나', '2025-04-22', 1)");
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id) VALUES ('앤지', '2025-04-23', 2)");
 
         List<Reservation> reservations = jdbcReservationDao.findAllReservations();
 
