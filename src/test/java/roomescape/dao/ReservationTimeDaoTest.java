@@ -27,7 +27,7 @@ public class ReservationTimeDaoTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
 
-        List<ReservationTime> times = reservationTimeDao.findAllTime();
+        List<ReservationTime> times = reservationTimeDao.findAllTimes();
 
         assertThat(times).hasSize(2);
     }
@@ -49,6 +49,6 @@ public class ReservationTimeDaoTest {
 
         reservationTimeDao.removeTimeById(newReservationTime.id());
 
-        assertThat(reservationTimeDao.findAllTime()).isEmpty();
+        assertThat(reservationTimeDao.findAllTimes()).isEmpty();
     }
 }

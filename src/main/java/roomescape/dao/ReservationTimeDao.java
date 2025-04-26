@@ -17,7 +17,7 @@ public class ReservationTimeDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<ReservationTime> findAllTime() {
+    public List<ReservationTime> findAllTimes() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, createReservationMapper());
     }

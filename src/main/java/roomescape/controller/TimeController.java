@@ -8,38 +8,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.TimeRequest;
+import roomescape.dto.TimeResponse;
+import roomescape.service.TimeService;
 
 @RestController
 @RequestMapping("/times")
 public class TimeController {
 
-    private final ReservationTimeDao reservationTimeDao;
+    private final TimeService timeService;
 
-    private TimeController(ReservationTimeDao reservationTimeDao) {
-        this.reservationTimeDao = reservationTimeDao;
+    private TimeController(TimeService timeService) {
+        this.timeService = timeService;
     }
 
     @PostMapping
-    public ReservationTimeResponse createReservationTime(
-        @RequestBody ReservationTimeRequest request) {
-        ReservationTime createdTime = reservationTimeDao.addTime(
-            ReservationTimeRequest.toEntity(request));
-        return ReservationTimeResponse.from(createdTime);
+    public TimeResponse createReservationTime(@RequestBody TimeRequest request) {
+        return timeService.addReservationTime(request);
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> readReservationTimes() {
-        return reservationTimeDao.findAllTime().stream()
-            .map(ReservationTimeResponse::from)
-            .toList();
+    public List<TimeResponse> readReservationTimes() {
+        return timeService.findAllReservationTimes();
     }
 
     @DeleteMapping("/{id}")
     public void deleteReservationTime(@PathVariable Long id) {
-        reservationTimeDao.removeTimeById(id);
+        timeService.removeReservationTime(id);
     }
 }

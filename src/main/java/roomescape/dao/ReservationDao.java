@@ -19,15 +19,17 @@ public class ReservationDao {
     private JdbcTemplate jdbcTemplate;
 
     public List<Reservation> findAllReservations() {
-        String sql = "SELECT "
-            + "r.id as reservation_id, "
-            + "r.name, "
-            + "r.date, "
-            + "t.id as time_id, "
-            + "t.start_at as time_value "
-            + "FROM reservation as r "
-            + "inner join reservation_time as t "
-            + "on r.time_id = t.id";
+        String sql = """
+            SELECT
+                r.id as reservation_id,
+                r.name,
+                r.date,
+                t.id as time_id,
+                t.start_at as time_value 
+            FROM reservation as r 
+            INNER JOIN reservation_time as t
+            ON r.time_id = t.id
+            """;
 
         return jdbcTemplate.query(sql, createReservationMapper());
     }
@@ -60,6 +62,7 @@ public class ReservationDao {
             rs.getDate("date").toLocalDate(),
             new ReservationTime(
                 rs.getLong("time_id"),
-                rs.getTime("time_value").toLocalTime()));
+                rs.getTime("time_value").toLocalTime())
+        );
     }
 }
