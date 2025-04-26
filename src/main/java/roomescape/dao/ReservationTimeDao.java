@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.entity.ReservationTime;
+import roomescape.domain.ReservationTime;
 
 @Repository
 public class ReservationTimeDao {
@@ -22,17 +22,22 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, createReservationMapper());
     }
 
+    public ReservationTime findTimeById(Long id) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, createReservationMapper(), id);
+    }
+
     public ReservationTime addTime(ReservationTime reservationTime) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement stmt = con.prepareStatement(sql, new String[]{"id"});
-            stmt.setTime(1, Time.valueOf(reservationTime.startAt()));
+            stmt.setTime(1, Time.valueOf(reservationTime.getStartAt()));
             return stmt;
         }, keyHolder);
 
-        return ReservationTime.withId(keyHolder.getKey().longValue(), reservationTime);
+        return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
     }
 
     public void removeTimeById(Long id) {
