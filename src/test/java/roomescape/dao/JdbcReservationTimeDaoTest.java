@@ -10,16 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.dao.jdbc.JdbcReservationTimeDao;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
-@Import(ReservationTimeDao.class)
-public class ReservationTimeDaoTest {
+@Import(JdbcReservationTimeDao.class)
+public class JdbcReservationTimeDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private JdbcReservationTimeDao jdbcReservationTimeDao;
 
     @Test
     @DisplayName("전체 시간을 조회할 수 있다.")
@@ -27,7 +28,7 @@ public class ReservationTimeDaoTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:00')");
 
-        List<ReservationTime> times = reservationTimeDao.findAllTimes();
+        List<ReservationTime> times = jdbcReservationTimeDao.findAllTimes();
 
         assertThat(times).hasSize(2);
     }
@@ -36,7 +37,7 @@ public class ReservationTimeDaoTest {
     @DisplayName("시간을 추가할 수 있다.")
     void addReservationTime() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
-        ReservationTime newReservationTime = reservationTimeDao.addTime(reservationTime);
+        ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
 
         assertThat(newReservationTime).isNotNull();
     }
@@ -45,10 +46,10 @@ public class ReservationTimeDaoTest {
     @DisplayName("ID로 시간을 삭제할 수 있다.")
     void removeReservation() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
-        ReservationTime newReservationTime = reservationTimeDao.addTime(reservationTime);
+        ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
 
-        reservationTimeDao.removeTimeById(newReservationTime.getId());
+        jdbcReservationTimeDao.removeTimeById(newReservationTime.getId());
 
-        assertThat(reservationTimeDao.findAllTimes()).isEmpty();
+        assertThat(jdbcReservationTimeDao.findAllTimes()).isEmpty();
     }
 }

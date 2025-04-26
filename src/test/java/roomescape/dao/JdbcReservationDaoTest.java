@@ -14,17 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.dao.jdbc.JdbcReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
-@Import(ReservationDao.class)
-public class ReservationDaoTest {
+@Import(JdbcReservationDao.class)
+public class JdbcReservationDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationDao reservationDao;
+    private JdbcReservationDao jdbcReservationDao;
 
     @Test
     @DisplayName("DataSource 접근 테스트")
@@ -46,7 +47,7 @@ public class ReservationDaoTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('사나', '2025-04-22', 1)");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('앤지', '2025-04-23', 2)");
 
-        List<Reservation> reservations = reservationDao.findAllReservations();
+        List<Reservation> reservations = jdbcReservationDao.findAllReservations();
 
         assertThat(reservations).hasSize(2);
     }
@@ -57,7 +58,7 @@ public class ReservationDaoTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22), time);
 
-        Reservation newReservation = reservationDao.addReservation(reservation);
+        Reservation newReservation = jdbcReservationDao.addReservation(reservation);
 
         assertThat(newReservation).isNotNull();
     }
@@ -68,9 +69,9 @@ public class ReservationDaoTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22), time);
 
-        Reservation newReservation = reservationDao.addReservation(reservation);
-        reservationDao.removeReservationById(newReservation.getId());
+        Reservation newReservation = jdbcReservationDao.addReservation(reservation);
+        jdbcReservationDao.removeReservationById(newReservation.getId());
 
-        assertThat(reservationDao.findAllReservations()).isEmpty();
+        assertThat(jdbcReservationDao.findAllReservations()).isEmpty();
     }
 }

@@ -15,7 +15,7 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    private ReservationService(ReservationDao reservationDao,
+    public ReservationService(ReservationDao reservationDao,
         ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;

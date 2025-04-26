@@ -12,7 +12,7 @@ public class TimeService {
 
     private final ReservationTimeDao reservationTimeDao;
 
-    private TimeService(ReservationTimeDao reservationTimeDao) {
+    public TimeService(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 
