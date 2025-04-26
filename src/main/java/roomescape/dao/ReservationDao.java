@@ -25,8 +25,8 @@ public class ReservationDao {
                 r.name,
                 r.date,
                 t.id as time_id,
-                t.start_at as time_value 
-            FROM reservation as r 
+                t.start_at as time_value
+            FROM reservation as r
             INNER JOIN reservation_time as t
             ON r.time_id = t.id
             """;

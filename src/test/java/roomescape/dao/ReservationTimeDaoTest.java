@@ -24,8 +24,8 @@ public class ReservationTimeDaoTest {
     @Test
     @DisplayName("전체 시간을 조회할 수 있다.")
     void findAllReservationTime() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:00')");
 
         List<ReservationTime> times = reservationTimeDao.findAllTimes();
 
@@ -47,7 +47,7 @@ public class ReservationTimeDaoTest {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
         ReservationTime newReservationTime = reservationTimeDao.addTime(reservationTime);
 
-        reservationTimeDao.removeTimeById(newReservationTime.id());
+        reservationTimeDao.removeTimeById(newReservationTime.getId());
 
         assertThat(reservationTimeDao.findAllTimes()).isEmpty();
     }

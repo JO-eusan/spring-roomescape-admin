@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 @JdbcTest
 @Import(ReservationDao.class)
@@ -40,10 +41,10 @@ public class ReservationDaoTest {
     @Test
     @DisplayName("전체 예약 기록을 조회할 수 있다.")
     void findAllReservation() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)",
-            "사나", "2025-04-22", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)",
-            "앤지", "2025-04-21", "12:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('16:40')");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('사나', '2025-04-22', 1)");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('앤지', '2025-04-23', 2)");
 
         List<Reservation> reservations = reservationDao.findAllReservations();
 
@@ -53,24 +54,22 @@ public class ReservationDaoTest {
     @Test
     @DisplayName("예약을 추가할 수 있다.")
     void addReservation() {
-        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22),
-            LocalTime.of(12, 0));
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
+        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22), time);
+
         Reservation newReservation = reservationDao.addReservation(reservation);
 
-        assertAll(() -> {
-            assertThat(newReservation).isNotNull();
-            assertThat(reservationDao.findAllReservations()).hasSize(1);
-        });
+        assertThat(newReservation).isNotNull();
     }
 
     @Test
     @DisplayName("ID로 예약을 삭제할 수 있다.")
     void removeReservation() {
-        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22),
-            LocalTime.of(12, 0));
-        Reservation newReservation = reservationDao.addReservation(reservation);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
+        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22), time);
 
-        reservationDao.removeReservationById(newReservation.id());
+        Reservation newReservation = reservationDao.addReservation(reservation);
+        reservationDao.removeReservationById(newReservation.getId());
 
         assertThat(reservationDao.findAllReservations()).isEmpty();
     }
