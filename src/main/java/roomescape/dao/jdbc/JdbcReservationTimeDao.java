@@ -1,13 +1,12 @@
 package roomescape.dao.jdbc;
 
-import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.util.HashMap;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
@@ -15,8 +14,15 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
+
+    public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+            .withTableName("reservation_time")
+            .usingGeneratedKeyColumns("id");
+    }
 
     public List<ReservationTime> findAllTimes() {
         String sql = "SELECT id, start_at FROM reservation_time";
@@ -29,16 +35,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     public ReservationTime addTime(ReservationTime reservationTime) {
-        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        Map<String, Object> param = new HashMap<>();
+        param.put("start_at", Time.valueOf(reservationTime.getStartAt()));
 
-        jdbcTemplate.update(con -> {
-            PreparedStatement stmt = con.prepareStatement(sql, new String[]{"id"});
-            stmt.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-            return stmt;
-        }, keyHolder);
-
-        return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
+        Number key = jdbcInsert.executeAndReturnKey(param);
+        return new ReservationTime(key.longValue(), reservationTime.getStartAt());
     }
 
     public void removeTimeById(Long id) {
