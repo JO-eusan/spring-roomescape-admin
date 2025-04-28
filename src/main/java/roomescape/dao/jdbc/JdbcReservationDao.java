@@ -58,7 +58,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     private RowMapper<Reservation> createReservationMapper() {
         return (rs, rowNum) -> new Reservation(
-            rs.getLong("id"),
+            rs.getLong("reservation_id"),
             rs.getString("name"),
             rs.getDate("date").toLocalDate(),
             new ReservationTime(
