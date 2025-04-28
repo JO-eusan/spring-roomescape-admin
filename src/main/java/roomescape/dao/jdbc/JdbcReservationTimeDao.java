@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -31,7 +32,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     public ReservationTime findTimeById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, createReservationMapper(), id);
+        try {
+            return jdbcTemplate.queryForObject(sql, createReservationMapper(), id);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("예약 가능한 시간이 아닙니다.");
+        }
     }
 
     public ReservationTime addTime(ReservationTime reservationTime) {

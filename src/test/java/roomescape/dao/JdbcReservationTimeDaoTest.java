@@ -1,6 +1,8 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -31,6 +33,28 @@ public class JdbcReservationTimeDaoTest {
         List<ReservationTime> times = jdbcReservationTimeDao.findAllTimes();
 
         assertThat(times).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("ID로 시간이 존재한다면 조회할 수 있다.")
+    void findTimeByExistedTime() {
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
+        ReservationTime actual = jdbcReservationTimeDao.addTime(reservationTime);
+
+        ReservationTime expected = jdbcReservationTimeDao.findTimeById(actual.getId());
+
+        assertAll(() -> {
+            assertThat(actual.getId()).isEqualTo(expected.getId());
+            assertThat(actual.getStartAt()).isEqualTo(expected.getStartAt());
+        });
+    }
+
+    @Test
+    @DisplayName("ID로 시간이 존재하지 않는다면 예외가 발생한다.")
+    void findTimeByNotExistedTime() {
+        assertThatThrownBy(() -> jdbcReservationTimeDao.findTimeById(1L))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("예약 가능한 시간이 아닙니다.");
     }
 
     @Test
