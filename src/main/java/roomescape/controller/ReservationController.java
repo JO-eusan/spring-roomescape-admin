@@ -1,9 +1,6 @@
 package roomescape.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,33 +8,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.entity.Reservation;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
+import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final List<Reservation> reservations = new ArrayList<>();
-    private final AtomicLong index = new AtomicLong(1L);
+    private final ReservationService reservationService;
 
-    @GetMapping
-    public List<Reservation> readReservations() {
-        return reservations;
+    private ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @PostMapping
-    public Reservation createReservation(@RequestBody Reservation reservation) {
-        Reservation newReservation = Reservation.withId(reservation, index.getAndIncrement());
-        reservations.add(newReservation);
-        return newReservation;
+    public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
+        return reservationService.addReservation(request);
+    }
+
+    @GetMapping
+    public List<ReservationResponse> readReservations() {
+        return reservationService.findAllReservations();
     }
 
     @DeleteMapping("/{id}")
     public void deleteReservation(@PathVariable Long id) {
-        Reservation reservation = reservations.stream()
-            .filter(r -> Objects.equals(r.getId(), id))
-            .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
-        reservations.remove(reservation);
+        reservationService.removeReservation(id);
     }
 }
